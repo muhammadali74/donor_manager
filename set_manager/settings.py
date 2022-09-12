@@ -157,5 +157,3 @@ HASHIDS_SALT = "jlsbeuoih439hOIHT90njkb983BUBIzxusCINXNiI0"
 
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS",
                           "127.0.0.1,localhost").split(",")
-
-

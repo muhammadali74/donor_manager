@@ -1,0 +1,304 @@
+{% load static  %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.14/css/jquery.dataTables.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
+<link href="https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{% static 'Datatable/css/style.css' %}">
+<title>SET Manager</title>
+</head>
+<body>
+        <div class="row">
+            <div class="col-md-12 main-datatable">
+                <div class="card_body">
+                    <div class="row d-flex">
+                        <div class="col-sm-4 createSegment"> 
+                        {% if user.is_authenticated and user.is_superuser %}
+                         <a class="btn dim_button create_new" data-toggle="modal" data-target="#exampleModalCenter"> <span class="glyphicon glyphicon-plus"></span> New Entry</a>
+                         <a class="btn dim_button create_new" data-toggle="modal" data-target="#import"><span class="glyphicon glyphicon-plus"></span> Import PDF</a>
+                         <a href='/export' class="btn dim_button create_new"> <span class="glyphicon glyphicon-cloud-download"></span> Download CSV</a>
+                         {% else %}
+                         <h2> Please Login first </h2>
+                         {% endif %}
+                         <div>{% for m in messages%} {{m}} {% endfor %}</div>
+
+<!-- Popup for PDF Import -->
+<div class="modal fade" id="import" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLongTitle">Upload PDF</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <form action = 'upload' method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+  <input type="file" id="myFile" name="myfile" required> <br><br>
+  <button type="submit" name="submit" class="btn btn-primary">Upload</button>
+</form>
+
+      </div>
+    </div>
+ </div>
+</div>
+<!-- Popup for PDF Import -->
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="exampleModalLongTitle">Entry Form</h3>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action = '' method = 'post'>
+        {% csrf_token %}
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="text">Name</label>
+      <input type="text" class="form-control" id="text" name = 'Name' required>
+    </div> 
+    <div class="form-group col-md-6">
+      <label for="Number">Amount</label>
+      <input type="Number" class="form-control" id="Number" name= 'Amount' required>
+    </div>
+        <div class="form-group col-md-6">
+      <label for="Number">Phone No</label>
+      <input type="Number" class="form-control" id="Number" name = 'Phone' required>
+    </div>
+        <div class="form-group col-md-6">
+      <label for="Number">Cheque Number</label>
+      <input type="Number" class="form-control" id="Number" name = 'Cheque' required>
+    </div>
+        <div class="form-group col-md-6">
+      <label for="Number">Financial Year</label>
+      <input type="Number" class="form-control" id="Number" name= 'financial_year' required>
+    </div>
+    <div class="form-group col-md-6">
+      <label for="text">On account of</label>
+      <input type="text" class="form-control" id="text" name= 'on_acc_of' required>
+    </div>
+        <label for="inputEmail4">Email</label>
+      <input type="email" class="form-control" id="inputEmail4" name='email' required>
+  </div>
+  {% comment %} <div class="form-group">
+    <label for="inputAddress">Address</label>
+    <input type="text" class="form-control" id="inputAddress">
+  </div> {% endcomment %}
+  <div class="form-group">
+    <label for="text">Remarks</label>
+    <input type="text" class="form-control" id="Remarks" name='Remarks' required>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputCity">Country</label>
+      <input type="text" class="form-control" id="Country" name = 'Country' required>
+    </div>
+    <div class="form-group col-md-4">
+      <label for="type">Type</label>
+      <select id="type" class="form-control" name='Type' required>
+        <option selected>Choose...</option>
+        <option>Credit</option>
+        <option>Debit</option>
+      </select>
+    </div>
+  </div>
+  <div class="form-group">
+  </div>
+
+      </div>
+      
+      <div class="modal-footer">
+      {% if user.is_authenticated %}
+        <button type="submit" class="btn btn-primary">Save entry</button>
+    {% else %}
+    <li> Please Login to continue</li>
+    {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+                        <!---Pop-up--->  
+                        </div>
+                    {% if user.is_authenticated %}
+                    <li>Hello, {{user.first_name}}</li>
+                    <li><a href="/logout">Logout</a></li>
+                        <div class="col-sm-8 add_flex">
+                            <div class="form-group searchInput">
+                                <label for="email">Search:</label>
+                                <input type="search" class="form-control" id="filterbox" placeholder=" ">
+                            </div>
+                        </div> 
+                    </div>
+                    <div class="overflow-x">
+                        <table style="width:100%;" id="filtertable" class="table cust-datatable dataTable no-footer">
+                            <thead>
+                                <tr>
+                                    <th style="min-width:10px;">ID</th>
+                                    <th style="min-width:80px;">Date</th>
+                                    <th style="min-width:100px;">Financial Year</th>
+                                    <th style="min-width:150px;">Type</th>
+                                    <th style="min-width:150px;">Amount</th>
+                                    <th style="min-width:150px;">Cheque Number</th>
+                                    <th style="min-width:150px;">Name</th>
+                                    <th style="min-width:150px;">From/To</th>
+                                    <th style="min-width:100px;">On account of</th>
+                                    <th style="min-width:100px;">Country</th>
+                                    <th style="min-width:100px;">Remarks</th>
+                                    <th style="min-width:100px;">Email</th>
+                                    {% comment %} <th style="min-width:150px;">Address</th> {% endcomment %}
+                                    <th style="min-width:100px;">Phone Number</th>
+                                    <th style="min-width:150px;">Status</th>
+                                    <th style="min-width:80px;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                            
+
+                                {% for d in donors %}
+                                    <td>{{d.id}}</td>
+                                    <td>{{d.Date}}</td>
+                                    <td>{{d.Financial_Year}}</td>
+                                    {% if d.Type  == 'DB' %}
+                                    <td><span class="mode mode_process">Debit</span></td>
+                                    {% else %}
+                                    <td><span class="mode mode_done">Credit</span></td>
+                                    {% endif %}
+                                    <td>{{d.Amount}}</td>
+                                    <td>{{d.Cheque_Number}}</td>
+                                    <td>{{d.Name}}</td>
+                                    <td>{{d.From_To}}</td>
+                                    <td>{{d.On_Account_Of}}</td>
+                                    <td>{{d.Country}}</td>
+                                    <td>{{d.Remarks}}</td>
+                                    {% comment %} <td>{{d.Email}}</td> {% endcomment %}
+                                    <td>{{d.Email}}</td>
+                                    <td>{{d.Phone_Number}}</td>
+
+                                    {% if d.Status  == 'RU' %}
+                                    <td><span class="mode mode_off">Receipt Unavailable</span></td>
+                                    {% else %}
+                                    <td><span class="mode mode_on">Receipt Generated</span></td>
+                                    {% endif %}
+
+                                    <td>
+                                        <div class="btn-group">
+                                            <a class="dropdown-toggle dropdown_icon" data-toggle="dropdown">
+                                            <i class="fa fa-pencil-square-o"></i> </a>
+                                            <ul class="dropdown-menu">
+                                                <li>
+
+                                                    <a href="admin/main/donor/{{d.id}}/change/" target="_blank">
+                                                        Edit
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="/duplicate/{{d.Date}}/{{d.Financial_Year}}/{{d.Type}}/{{d.Amount}}/{{d.Cheque_Number}}/{{d.Name}}/{{d.From_To}}/{{d.On_Account_Of}}/{{d.Country}}/{{d.Remarks}}/{{d.Email}}/{{d.Phone_Number}}">
+                                                        Duplicate
+                                                    </a>
+                                                </li>  
+                                                <li>
+                                                    <a href='/delete/{{d.id}}' >
+                                                        Delete
+                                                    </a>
+                                                </li>  
+                                            </ul>
+                                        </div>
+                                        <div class="btn-group">
+                                            <a class="dropdown-toggle dropdown_icon" data-toggle="dropdown">
+                                                <i class="fa fa-ellipsis-h"></i>
+                                            </a>
+                                            <ul class="dropdown-menu dropdown_more">
+                                                <li>
+                                                    <a href="/receipt/{{d.get_hashid}}/{{d.Date}}/{{d.Amount}}" target="_black">
+                                                        <i class="fa fa-list"></i>Generate Receipt</a>
+                                                    </li>
+                                                    <li>
+                                                    <a href="records/{{d.get_hashid}}" target="_black">
+                                                        <i class="fa fa-list-alt"></i>View Receipt</a>
+                                                    </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+
+
+                                {% comment %} <tr>
+                                    <td>1</td>
+                                    <td>20-June-2022</td>
+                                    <td>2022</td>
+                                    <td><span class="mode mode_done">Credit</span></td>
+                                    <td>10,000</td>
+                                    <td>Nil</td>
+                                    <td>Mr X</td>
+                                    <td>Donation</td>
+                                    <td>Pak</td>
+                                    <td>None</td>
+                                    <td>000000000000</td>
+                                    <td>email@example.com</td>
+                                    <td>00000000000</td>
+                                    <td><span class="mode mode_on">Receipt Generated</span></td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a class="dropdown-toggle dropdown_icon" data-toggle="dropdown">
+                                            <i class="fa fa-pencil-square-o"></i> </a>
+                                            <ul class="dropdown-menu">
+                                                <li>
+                                                    <a href="#" target="_blank">
+                                                        Edit
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" target="_blank">
+                                                        Duplicate
+                                                    </a>
+                                                </li>  
+                                                <li>
+                                                    <a href="#" target="_blank">
+                                                        Delete
+                                                    </a>
+                                                </li>  
+                                            </ul>
+                                        </div>
+                                        <div class="btn-group">
+                                            <a class="dropdown-toggle dropdown_icon" data-toggle="dropdown">
+                                                <i class="fa fa-ellipsis-h"></i>
+                                            </a>
+                                            <ul class="dropdown-menu dropdown_more">
+                                                <li>
+                                                    <a href="#" target="_black">
+                                                        <i class="fa fa-list"></i>Generate Receipt</a>
+                                                    </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr> {% endcomment %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+                            {% else %}
+                            <li><a href="/login">Login</a></li>
+                            {% endif %}
+<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.14/js/jquery.dataTables.min.js"></script>
+<script src="{% static 'Datatable/main.js' %}"></script>
+</body>
+</html>
+
