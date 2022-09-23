@@ -59,7 +59,7 @@ def login(request):
             messages.info(request, 'Invalid Credentials')
             return redirect('login')
     else:
-        return render(request, 'Login.php.html')
+        return render(request, 'Login.html')
 
 
 def index(request):
