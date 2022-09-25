@@ -3,10 +3,6 @@ body{
     background: #f9f9f9;
 }
 
-.close{
-    align-items: right;
-
-}
 .datefilter{
   position: absolute;
   margin: auto;
@@ -15,6 +11,10 @@ body{
 }
 
 
+.close{
+    align-items: right;
+
+}
 .modal-title{
     font-family: sans-serif;
     text-align: center;
